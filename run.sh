@@ -37,7 +37,7 @@ if [ -n "$pr_number" ]; then
   new_version=$(gobump $command -w -v | ./jq -r '.[]')
 
   if ! git diff --exit-code; then
-      git commit -a -m "bump version to $new_version\n\n$WERCKER_DEPLOY_URL"
+      git commit -a -m "bump version to $new_version"$'\n\n'"$WERCKER_DEPLOY_URL"
       git push -q "https://$github_token@github.com/$WERCKER_GIT_OWNER/$WERCKER_GIT_REPOSITORY" HEAD:master >/dev/null 2>&1 # supperss unexpected token output
   fi
 else
