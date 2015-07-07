@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 set -e
 
@@ -23,12 +23,12 @@ pr_number=$(git show --pretty=%s | sed -n 's/^Merge pull request #\([0-9]\{1,\}\
 
 if [ -n "$pr_number" ]; then
   labels=$(curl -s -H "Authorization: token $WERCKER_GOBUMP_GITHUB_PR_GITHUB_TOKEN" \
-      https://api.github.com/repos/$WERCKER_GIT_OWNER/$WERCKER_GIT_REPOSITORY/issues/$pr_number/labels | ./jq -r 'map(.name) | join("\n")')
+      "https://api.github.com/repos/$WERCKER_GIT_OWNER/$WERCKER_GIT_REPOSITORY/issues/$pr_number/labels" | ./jq -r 'map(.name) | join("\n")')
 
   command='patch'
-  if [ -n "$label_pattern_major" -a -n "$(echo $labels | grep -i -E \"$label_pattern_major\")" ]; then
+  if [ -n "$label_pattern_major" ] && ( echo "$labels" | grep -q -i -E "$label_pattern_major" ) then
     command='major'
-  elif [ -n "$label_pattern_minor" -a -n "$(echo $labels | grep -i -E \"$label_pattern_minor\")" ]; then
+  elif [ -n "$label_pattern_minor" ]  && ( echo "$labels" | grep -q -i -E "$label_pattern_minor" ) then
     command='minor'
   fi
 
@@ -36,7 +36,7 @@ if [ -n "$pr_number" ]; then
 
   if ! git diff --exit-code; then
       git commit -a -m "bump version to $new_version\n\n$WERCKER_DEPLOY_URL"
-      git push -q https://$GITHUB_TOKEN@github.com/$WERCKER_GIT_OWNER/$WERCKER_GIT_REPOSITORY HEAD:master >/dev/null 2>&1 # supperss unexpected token output
+      git push -q "https://$GITHUB_TOKEN@github.com/$WERCKER_GIT_OWNER/$WERCKER_GIT_REPOSITORY" HEAD:master >/dev/null 2>&1 # supperss unexpected token output
   fi
 else
   info 'no pull request merged, will not bump version'
