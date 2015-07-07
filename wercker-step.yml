@@ -1,8 +1,9 @@
 name: gobump-github-pull-request
-version: 1.0.0
+version: 1.0.1
 description: Bump up version on the pull requests merged and push to GitHub
 keywords:
   - Go
+  - GitHub
 properties:
   github_token:
     type: String
