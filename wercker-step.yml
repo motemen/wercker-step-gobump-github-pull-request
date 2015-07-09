@@ -1,5 +1,5 @@
 name: gobump-github-pull-request
-version: 1.1.1
+version: 1.1.2
 description: Bump up version on the pull requests merged and push to GitHub
 keywords:
   - Go
