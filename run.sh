@@ -24,15 +24,15 @@ git config --global user.name  'werckerbot'
 # Bump version according to the Pull Request just merged
 pr_number=$(git show --pretty=%s | sed -n 's/^Merge pull request #\([0-9]\{1,\}\) .*/\1/p')
 
-# Check if specified files are changed
-if [ -n "$changed_files_pattern" ]; then
-  if ! ( git diff --name-only HEAD~1 | grep -q -i -E "$changed_files_pattern" ); then
-    info "no file matching '$changed_files_pattern' changed"
-    exit
-  fi
-fi
-
 if [ -n "$pr_number" ]; then
+  # Check if specified files are changed
+  if [ -n "$changed_files_pattern" ]; then
+    if ! ( git diff --name-only HEAD~1 | grep -q -i -E "$changed_files_pattern" ); then
+      info "no files matching '$changed_files_pattern' changed"
+      exit 0
+    fi
+  fi
+
   labels=$(curl -s -H "Authorization: token $github_token" \
       "https://api.github.com/repos/$WERCKER_GIT_OWNER/$WERCKER_GIT_REPOSITORY/issues/$pr_number/labels" | ./jq -r 'map(.name) | join("\n")')
 
