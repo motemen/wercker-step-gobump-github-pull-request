@@ -1,5 +1,5 @@
 name: gobump-github-pull-request
-version: 1.0.2
+version: 1.1.0
 description: Bump up version on the pull requests merged and push to GitHub
 keywords:
   - Go
@@ -12,3 +12,6 @@ properties:
     type: String
   label_pattern_minor:
     type: String
+  changed_files_pattern:
+    type: String
+    default: .go$

@@ -10,6 +10,7 @@ github_token="$WERCKER_GOBUMP_GITHUB_PULL_REQUEST_GITHUB_TOKEN"
 
 label_pattern_major="$WERCKER_GOBUMP_GITHUB_PULL_REQUEST_LABEL_PATTERN_MAJOR"
 label_pattern_minor="$WERCKER_GOBUMP_GITHUB_PULL_REQUEST_LABEL_PATTERN_MINOR"
+changed_files_pattern="$WERCKER_GOBUMP_GITHUB_PULL_REQUEST_CHANGED_FILES_PATTERN"
 
 # Install tools
 go get github.com/motemen/gobump/cmd/gobump
@@ -22,6 +23,14 @@ git config --global user.name  'werckerbot'
 
 # Bump version according to the Pull Request just merged
 pr_number=$(git show --pretty=%s | sed -n 's/^Merge pull request #\([0-9]\{1,\}\) .*/\1/p')
+
+# Check if specified files are changed
+if [ -n "$changed_files_pattern" ]; then
+  if ! ( git diff --name-only HEAD~1 | grep -q -i -E "$changed_files_pattern" ); then
+    info "no file matching '$changed_files_pattern' changed"
+    exit
+  fi
+fi
 
 if [ -n "$pr_number" ]; then
   labels=$(curl -s -H "Authorization: token $github_token" \
@@ -37,8 +46,8 @@ if [ -n "$pr_number" ]; then
   new_version=$(gobump $command -w -v | ./jq -r '.[]')
 
   if ! git diff --exit-code; then
-      git commit -a -m "bump version to $new_version"$'\n\n'"$WERCKER_DEPLOY_URL"
-      git push -q "https://$github_token@github.com/$WERCKER_GIT_OWNER/$WERCKER_GIT_REPOSITORY" HEAD:master >/dev/null 2>&1 # supperss unexpected token output
+    git commit -a -m "bump version to $new_version"$'\n\n'"$WERCKER_DEPLOY_URL"
+    git push -q "https://$github_token@github.com/$WERCKER_GIT_OWNER/$WERCKER_GIT_REPOSITORY" HEAD:master >/dev/null 2>&1 # supperss unexpected token output
   fi
 else
   info 'no pull request merged, will not bump version'
