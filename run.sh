@@ -41,6 +41,8 @@ if [ -n "$pr_number" ]; then
     if ! git diff --exit-code; then
       git commit -a -m "bump version to $new_version"$'\n\n'"$WERCKER_DEPLOY_URL"
       git push "https://$github_token@github.com/$WERCKER_GIT_OWNER/$WERCKER_GIT_REPOSITORY" HEAD:master
+
+      export GOBUMP_NEW_VERSION="$new_version"
     fi
   else
     info "no files matching '$changed_files_pattern' changed"
