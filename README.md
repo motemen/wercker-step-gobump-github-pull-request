@@ -10,3 +10,11 @@ Configuration
 
 - `github_token`
   - *Required*. A valid GitHub API token.
+- `label_pattern_major`
+  - Pull requests with labels matching this pattern (in "extended regular expression") will bump the "major" part.
+  - Defaults to no pattern.
+- `label_pattern_minor`
+  - Ditto for "minor" part.
+- `changed_files_pattern`
+  - Pull requests containing changes matching this pattern (in "extended regular expression") will cause version bump.
+  - Defaults to `\.go$`.
